@@ -1,9 +1,13 @@
 import secrets
 
 def miller_rabin(n, k=40):
+    """Runs Miller-Rabin probabilistic primality test.
+    Running this test 40 times reduces type I error 
+    to at most 4^(-40) (extremely low)"""
+
     if n < 2:
         return False
-    if n == 2 or n == 3:
+    if n in (2, 3):
         return True
     if n % 2 == 0:
         return False
@@ -19,7 +23,7 @@ def miller_rabin(n, k=40):
         a = secrets.randbelow(n - 3) + 2
         x = pow(a, s, n)
 
-        if x == 1 or x == n - 1:
+        if x in (1, n-1):
             continue
 
         for _ in range(r - 1):

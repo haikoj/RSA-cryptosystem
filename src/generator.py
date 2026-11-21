@@ -5,11 +5,13 @@ from miller_rabin import miller_rabin
 
 
 def primegen(small_primes, bits=1024, k=40):
+    """Generates a 1024-bit probable prime number"""
     while True:
         prime_candidate = secrets.randbits(bits)
-        prime_candidate |= 1
-        prime_candidate |= 2**(bits - 1)
+        prime_candidate |= 1 # ensures oddness
+        prime_candidate |= 2**(bits - 1) # ensures 1024 bits
 
+        # tests if candidate is divisible by small primes
         if any(prime_candidate % p == 0 for p in small_primes):
             continue
 
@@ -18,6 +20,7 @@ def primegen(small_primes, bits=1024, k=40):
 
 
 def keygen(small_primes):
+    """Generates a public and private key according to the RSA algorithm"""
     e = 65537
 
     while True:
