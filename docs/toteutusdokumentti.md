@@ -3,6 +3,7 @@
 ## Ohjelman yleisrakenne
 
 Ohjelmassa on seuraavat komponentit:
+
 `main.py`: 
 Vastaa koko ohjelman toiminnasta eri komponenttien välillä. Sisältää komentorivikäyttöliittymän. Käyttöliittymässä on valikko, jossa käyttäjä valitsee joko avainparin luomisen, viestin salaamisen tai sen purkamisen.
 
