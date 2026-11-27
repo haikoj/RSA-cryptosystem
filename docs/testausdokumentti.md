@@ -1,5 +1,6 @@
 # Testausdokumentti
 
+
 ## Testauksen kattavuusraportti
 
 ```text
@@ -15,6 +16,7 @@ TOTAL                            114      1     44      1    99%
 
 ```
 
+
 ## Testauksen toteutus
 
 Ohjelmaan on toteutettu pytest-testikehystä käyttämällä yksikkö- ja integraatiotestejä. Testikattavuutta on seurattu ja testikattavuusraportti on luotu coverage.py:n avulla. 
@@ -22,6 +24,7 @@ Ohjelmaan on toteutettu pytest-testikehystä käyttämällä yksikkö- ja integr
 Yksikkötesteillä on testattu kaikkien ohjelman komponenttien toimintaa.
 
 Integraatiotestillä `test_rsa_integ.py` varmistetaan, että avainten luominen, viestin salaaminen ja salauksen purkaminen toimivat yhdessä. 
+
 
 ## Testit
 Testitiedostot on nimetty viittaamaan testattavaan komponenttiin. Esimerkiksi `test_generator.py` testaa tiedostoa `generator.py`.
@@ -54,7 +57,16 @@ Testitiedostot on nimetty viittaamaan testattavaan komponenttiin. Esimerkiksi `t
 `test_sieve_of_eratosthenes.py`
 
 - `test_primes_up_to_100` testaa, että ohjelmassa toteutettu Eratostheneen seula palauttaa kaikki alkuluvut välillä 2-100
-- `test_prime_count_up_to_1_million` testaa, että Eratostheneen seula palauttaa oikean määrän alkulukuja 
+- `test_prime_count_up_to_1_million` testaa, että Eratostheneen seula palauttaa oikean määrän alkulukuja
+
+`test_main.py`
+
+- `test_key_generation` testaa, että avainten generointi ja tulostaminen toimii oikein.
+- `test_encrypt_message` testaa, että salausfunktiota kutsutaan oikein ja salattu viesti tulostetaan.
+- `test_decrypt_message` testaa, että purkufunktiota kutsutaan oikein ja purettu viesti tulostetaan.
+- `test_invalid_encryption_input` testaa, että virheellinen syöte viestin salauksessa aiheuttaa virheilmoituksen.
+- `test_invalid_decryption_input` testaa, että virheellinen syöte salauksen purkamisessa aiheuttaa virheilmoituksen.
+- `test_invalid_option_input` testaa, että virheellinen valikkovalinta käsitellään oikein.
 
 ### Integraatiotestit
 `test_rsa_integ.py` testaa, että avainten luominen, viestin salaaminen ja salauksen purkaminen toimivat yhdessä. Testi kutsuu ensin `sieve_of_eratosthenes.py`:n `sieve`-funktiota parametrilla 10000, joka palauttaa pienet alkuluvut välillä 2-10000, ja generoi sitten 2048-bittisen RSA-avainparin `keygen`-funktiolla parametrinaan pienet alkuluvut. Viestin syötteenä käytetään viestiä, joka sisältää rivinvaihtoja, isoja ja pieniä kirjaimia ja erikoismerkkkejä. Sitten testi kutsuu `encrypt`-funktiota parametreinaan viesti ja julkinen avain. Funktio palauttaa ciphertextin, jota käytetään yksityisen avaimen kanssa parametrina `decrypt`-funktion kutsumisessa. Lopuksi testi katsoo, että purettu viesti vastaa alkuperäistä viestiä.
@@ -67,11 +79,14 @@ Testit voi suorittaa ohjelman juuresta seuraavilla komennolla:
 
 `poetry run pytest`
 
-Testikattavuusraportin saa näkyviin komennolla:
+Testikattavuusraportin saa näkyviin komennoilla:
+
 `poetry run coverage run --branch -m pytest`
+
 `poetry run coverage report -m`
 
 Ja HTML-muodossa: 
+
 `poetry run coverage html`
 
 Testien ajamiseen kuluu aikaa noin 20 sekuntia. Tämä johtuu pitkälti test_generator.py -yksikkötesteistä, joissa ohjelman pitää generoida 1024-bittisiä alkulukuja ja 2048-bittisiä avaimia.
