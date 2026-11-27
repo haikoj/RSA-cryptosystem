@@ -3,20 +3,15 @@
 ## Testauksen kattavuusraportti
 
 ```text
-Name                                                 Stmts   Miss Branch BrPart  Cover   Missing
-------------------------------------------------------------------------------------------------
-src/generator.py                                        29      2     10      2    90%   30, 39
-src/miller_rabin.py                                     24      0     16      0   100%
-src/rsa.py                                              11      0      2      0   100%
-src/sieve_of_eratosthenes.py                             8      0      6      0   100%
-src/tests/integration_tests/test_rsa_integ.py           10      0      0      0   100%
-src/tests/unit_tests/test_generator.py                  26      0      0      0   100%
-src/tests/unit_tests/test_miller_rabin.py               19      0      0      0   100%
-src/tests/unit_tests/test_rsa.py                         9      1      0      0    89%   13
-src/tests/unit_tests/test_sieve_of_eratosthenes.py       5      0      0      0   100%
-------------------------------------------------------------------------------------------------
-TOTAL                                                  141      3     34      2    97%
-
+Name                           Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------------
+src/generator.py                  29      0     10      0   100%
+src/main.py                       42      1     10      1    96%   60
+src/miller_rabin.py               24      0     16      0   100%
+src/rsa.py                        11      0      2      0   100%
+src/sieve_of_eratosthenes.py       8      0      6      0   100%
+--------------------------------------------------------------------------
+TOTAL                            114      1     44      1    99%
 
 ```
 
@@ -24,7 +19,7 @@ TOTAL                                                  141      3     34      2 
 
 Ohjelmaan on toteutettu pytest-testikehystä käyttämällä yksikkö- ja integraatiotestejä. Testikattavuutta on seurattu ja testikattavuusraportti on luotu coverage.py:n avulla. 
 
-Yksikkötesteillä on testattu kaikkien ohjelman komponenttien toimintaa `main.py`:tä lukuun ottamatta.
+Yksikkötesteillä on testattu kaikkien ohjelman komponenttien toimintaa.
 
 Integraatiotestillä `test_rsa_integ.py` varmistetaan, että avainten luominen, viestin salaaminen ja salauksen purkaminen toimivat yhdessä. 
 
@@ -42,12 +37,15 @@ Testitiedostot on nimetty viittaamaan testattavaan komponenttiin. Esimerkiksi `t
 - `test_e_is_65537` testaa, että julkinen eksponentti on oikein 
 - `test_n_is_2048_bits` testaa, että moduluksen (generoitujen alkulukujen tulo) pituus on täsmälleen 2048 bittiä
 - `test_encryption_and_decryption` testaa, että luotu avainpari toimii viestin salauksessa ja purkamisessa. Testissä viesti on kokonaisluku 12345 ja se salataan ja puretaan pow-funktiolla (pythoniin sisäänrakennettu modulaarinen potenssiin korotus). Testi läpäistään, jos purettu viesti täsmää viestiin 12345.
+- `test_equal_primes_rejection` testaa, että moduluksen muodostama lukupari hylätään, kun sen muodostaa kaksi samaa lukua. Testissä mockataan `primegen`-funktion palauttamat luvut niin, että ensimmäisellä kierroksella molemmat luvut ovat `p = 2^1024 - 1` ja toisella luvut ovat `p` ja `q = 2^1024 - 2`. Testi tarkistaa, että `primegen`-funktiota kutsuttiin neljästi ja että modulus saatiin toisen kierroksen luvuista.
+- `test_keygen_rejects_non_coprime_exponent` testaa, että lukupari hylätään, jos julkinen eksponentti e ja laskettu phi eivät ole keskenään jaottomia. `primegen`-funktion palauttamat arvot mockataan niin, että ensimmäisellä keirroksella phi on jaollinen julkisella eksponentilla 65537, eli `invalid_p = 2^1024 - 65537` ja toisella kierroksella ne ovat keskenään jaottomia. Testi tarkistaa, että `primegen`-funktiota kutsuttiin neljästi, että modulus vastaa hyväksyttyjen lukujen tuloa ja että modulaarinen käänteisluku on oikein.
 
 `test_miller_rabin.py`
 
-- `test_smallest_numbers` testaa, että ohjelmassa toteutettu Miller-Rabin tunnistaa pienien lukujen (0-4) alkulukuisuuden
-- `test_primes` testaa, että Miller-Rabin tunnistaa tietyt viisi alkulukua alkuluvuiksi
-- `test_nonprimes` testaa, ettei Miller-Rabin tunnista tietyt viisi lukua virheelisesti alkuluvuiksi 
+- `test_primes` testaa, että Miller–Rabin tunnistaa neljä alkulukua: 65537 ja Mersenneen suuret alkuluvut 2^107-1, 2^607-1 ja 2^4253-1.
+- `test_composite_numbers` testaa, että Miller–Rabin tunnistaa neljä suurta yhdistettyä lukua: 2^1500, ja ylemmät Mersenneen alkuluvut kokonaisluvuilla kerrottuina. 
+- `test_composite_numbers_without_small_prime_factors testaa`, että Miller–Rabin tunnistaa myös sellaiset yhdistetyt luvut, joilla ei ole pieniä alkutekijöitä. Testattavat neljä lukua muodostetaan kertomalla ylempiä Mersennen alkulukuja keskenään.
+- `test_small_primes testaa`, että Miller–Rabinin algoritmi käsittelee pienet luvut oikein. Tääm testi on vain Miller-Rabinin algoritmia, ei koko ohjelmaa varten.
 
 `test_rsa.py`
 
@@ -70,10 +68,10 @@ Testit voi suorittaa ohjelman juuresta seuraavilla komennolla:
 `poetry run pytest`
 
 Testikattavuusraportin saa näkyviin komennolla:
-`poetry run coverage run --branch -m pytest src`
+`poetry run coverage run --branch -m pytest`
 `poetry run coverage report -m`
 
 Ja HTML-muodossa: 
 `poetry run coverage html`
 
-Testien ajamiseen kuluu aikaa noin 10-20 sekuntia. Tämä johtuu pitkälti test_generator.py -yksikkötesteistä, joissa ohjelman pitää generoida 1024-bittisiä alkulukuja ja 2048-bittisiä avaimia.
+Testien ajamiseen kuluu aikaa noin 20 sekuntia. Tämä johtuu pitkälti test_generator.py -yksikkötesteistä, joissa ohjelman pitää generoida 1024-bittisiä alkulukuja ja 2048-bittisiä avaimia.
