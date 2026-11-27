@@ -22,3 +22,10 @@ def test_composite_numbers_without_small_prime_factors():
     assert miller_rabin.miller_rabin(prime_1*prime_3) == False
     assert miller_rabin.miller_rabin(prime_2*prime_3) == False
     assert miller_rabin.miller_rabin(prime_1*prime_2*prime_3) == False
+
+def test_small_primes():
+    assert miller_rabin.miller_rabin(-1) == False
+    assert miller_rabin.miller_rabin(0) == False
+    assert miller_rabin.miller_rabin(1) == False
+    assert miller_rabin.miller_rabin(2) == True
+    assert miller_rabin.miller_rabin(3) == True

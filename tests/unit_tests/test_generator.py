@@ -41,3 +41,22 @@ def test_encryption_and_decryption():
     decrypted = pow(encrypted, priv[1], pub[0])
     
     assert decrypted == message
+
+p = 2**1024 - 1
+q = 2**1024 - 2
+invalid_p = 2**1024 - 65537
+
+def test_equal_primes_rejection():
+    with patch("generator.primegen", side_effect=[p, p, p, q]) as mock:
+        pub, priv = keygen(small_primes)
+
+    assert mock.call_count == 4
+    assert pub[0] == p*q == priv[0]
+
+def test_keygen_rejects_non_coprime_exponent():
+    with patch("generator.primegen", side_effect=[invalid_p, q, p, q]) as mock:
+         pub, priv = keygen(small_primes)
+
+    assert mock.call_count == 4
+    assert pub[0] == p*q == priv[0]
+    assert (pub[1]*priv[1]) % ((p-1)*(q-1)) == 1
